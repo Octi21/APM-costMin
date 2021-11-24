@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <queue>
+#define LIMIT 100020
 using namespace std;
 
 
@@ -304,7 +305,7 @@ class Disjoint
 {
 private:
 	int n, m;
-	int rang[100001], par[100001];
+	int rang[LIMIT], par[LIMIT];
 	
 	int cautR(int x);
 	void unite(int x, int y);
@@ -315,10 +316,11 @@ public:
 
 int Disjoint::cautR(int x)
 {
-	if (par[x] != x)
-		cautR(par[x]);
-	else
-		return x;
+	while (x != par[x])
+	{
+		x = par[x];
+	}
+	return x;
 }
 
 void Disjoint::unite(int x, int y)
@@ -341,8 +343,8 @@ void Disjoint::unite(int x, int y)
 void Disjoint:: afis()
 {
 	int  com,x,y;
-	ifstream in("graf.in");
-	ofstream out("graf.out");
+	ifstream in("disjoint.in");
+	ofstream out("disjoint.out");
 	in >> n >> m;
 	for (int i = 1; i <= n; ++i)
 	{
@@ -354,8 +356,9 @@ void Disjoint:: afis()
 		in >> com >> x >> y;
 		if (com == 1)
 		{
-			cout << "pentru1 : \n";
 			unite(x, y);
+			/*
+			cout << "pentru1 : \n";
 			cout << "rang = ";
 			for (int i = 1; i <= n; ++i)
 			{
@@ -368,13 +371,13 @@ void Disjoint:: afis()
 				cout << par[i] << " ";
 			}
 			cout << "\n";
-
+			*/
 		}
 		else
 		{
-			cout << "pt2 : \n";
-			cout << "rad x = " << cautR(x) << "//// rad y = " << cautR(y);
-			cout << "\n";
+			//cout << "pt2 : \n";
+			//cout << "rad x = " << cautR(x) << "//// rad y = " << cautR(y);
+			//cout << "\n";
 			if (cautR(x) == cautR(y))
 				out << "DA\n";
 			else
