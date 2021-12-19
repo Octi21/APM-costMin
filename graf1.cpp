@@ -36,6 +36,12 @@ class Graf
 
 	int bfsArbore(int& nod); // arbore
 
+	void addEdge(int x, int y);
+	void removeEdge(int x, int y);
+	bool nuPod(int nodp, int nodc);
+	int nrNod(int nodp, vector<bool>& visited);
+	void printEuler(int nodp); //euler
+
 public:
 	Graf(int n, int m, vector <vector<pair<int, int>>> adiacenta);
 	Graf(int n, int m, vector <vector <int>> adiacenta2);
@@ -56,6 +62,8 @@ public:
 
 	void royFloyd();
 	void diametruArbore();
+
+	void print();  // euler
 };
 
 Graf::Graf(int n, int m, vector <vector<pair<int, int>>> adiacenta)
@@ -903,6 +911,154 @@ void p14()
 }
 
 
+
+void Graf::addEdge(int x, int y)
+{
+	adiacenta2[x].push_back(y);
+	adiacenta2[y].push_back(x);
+}
+
+void Graf::removeEdge(int x, int y) {
+
+	for (int i = 0; i < adiacenta2[y].size(); ++i)
+	{
+		if (adiacenta2[y][i] == x)
+		{
+			swap(adiacenta2[y][i], adiacenta2[y][adiacenta2[y].size() - 1]);
+			adiacenta2[y].pop_back();
+			break;
+		}
+	}
+
+
+	for (int i = 0; i < adiacenta2[x].size(); ++i)
+	{
+		if (adiacenta2[x][i] == y)
+		{
+			swap(adiacenta2[x][i], adiacenta2[x][adiacenta2[x].size() - 1]);
+			adiacenta2[x].pop_back();
+			break;
+		}
+	}
+
+}
+
+bool Graf::nuPod(int nodp, int nodc)
+{
+	int c1 = 0, c2 = 0;
+	vector<bool> visited;
+
+	removeEdge(nodp, nodc);
+	visited = vector<bool>(n + 1, false);
+	c1 = nrNod(nodc, visited);
+
+	addEdge(nodp, nodc);
+	visited = vector<bool>(n + 1, false);
+	c2 = nrNod(nodc, visited);
+
+
+	if (c2 == c1)
+		return true;
+	else
+		return false;
+
+}
+
+
+int Graf::nrNod(int nodp, vector<bool>& visited)
+{
+	visited[nodp] = true;
+	int count = 1;
+	for (auto nodc : adiacenta2[nodp])
+	{
+		if (visited[nodc] == false)
+		{
+			count += nrNod(nodc, visited);
+		}
+	}
+	return count;
+
+}
+
+void Graf::printEuler(int nodp)
+{
+
+
+	//out<<nodp<<" ";
+
+
+	if (adiacenta2[nodp].size() == 0)
+	{
+		return;
+	}
+	else
+		cout << nodp << " ";
+
+
+	if (adiacenta2[nodp].size() == 1)
+	{
+		int nodc = adiacenta2[nodp][0];
+		removeEdge(nodp, nodc);
+		printEuler(nodc);
+		return;
+	}
+
+
+	for (auto nodc : adiacenta2[nodp])
+	{
+		if (nuPod(nodp, nodc))
+		{
+			removeEdge(nodp, nodc);
+			printEuler(nodc);
+			return;
+		}
+
+	}
+
+}
+
+void Graf::print()
+{
+
+	int odd = 0;
+
+	for (int i = 1; i <= n; ++i)
+	{
+		if (adiacenta2[i].size() % 2 == 1)
+		{
+			odd++;
+		}
+
+	}
+	if (odd == 0)
+	{
+		printEuler(1);
+	}
+	else
+	{
+		cout << -1;
+	}
+
+}
+
+void p15()
+{
+	ifstream in("graf.in");
+	int n, m, x, y;
+	in >> n >> m;
+	vector<vector<int>> adiacenta2(n + 1);
+
+	for (int i = 1; i <= m; ++i)
+	{
+		in >> x >> y;
+		adiacenta2[x].push_back(y);
+		adiacenta2[y].push_back(x);
+	}
+	Graf g(n, m, adiacenta2);
+
+	g.print();
+}
+
 class Disjoint
 {
 private:
@@ -1043,20 +1199,22 @@ void p12()   // havel hakimi
 
 int main()
 {
-	//p1();
-	//p2();
-	//p3();
-	//p4();
-	//p5();
-	//p6();
-	//p7();
-	//p8();
-	//p9();
-	//p10();
-	//p11();
-	//p12();
-	//p13();
-	p14();
+	//p1();   // algPrim
+	//p2();   // prim cu pq
+	//p3();   // dijkstra
+	//p4();   // bel ford
+	//p5();   //                            disjoint 
+	//p6();   // componente biconexe tarjan
+	//p7();   // bfs
+	//p8();   // dfs calc nr comp conexe
+	//p9();   // tare conex
+	//p10();   // muchie critica
+	//p11();   // topologic
+	//p12();   //                           havel
+	//p13();   // roy floyd
+	//p14();   // diametru arbore
+	p15();   // euler
+
 
 	return 0;
 }
